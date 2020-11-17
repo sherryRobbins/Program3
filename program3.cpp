@@ -21,12 +21,24 @@ public: //attributes
 	}
 };
 
+class Robot {
+public:
+	int location;
+	int reward;
+	
+	Robot() {
+		this->location = -1;
+		this->reward = 0;
+	}
+};
+
 void populateGrid(GridBox gridArray[6][5]);
 void displayGrid(GridBox gridArray[6][5]);
 void sensing(GridBox gridArray[6][5], bool evidence[4]);
 void motion(GridBox gridArray[6][5], char direction);
 
 int main() {
+	Robot robot = new Robot();
 	GridBox gridArray[6][5];
 	populateGrid(gridArray);
 	cout << "Initial Location Probabilities" << endl;
