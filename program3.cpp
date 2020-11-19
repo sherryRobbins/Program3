@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
-
+#include<cstdlib>/*Used for the random number generator*/
 using namespace std;
 
 class GridBox {
@@ -36,7 +36,7 @@ void populateGrid(GridBox gridArray[6][5]);
 void displayGrid(GridBox gridArray[6][5]);
 void sensing(GridBox gridArray[6][5], bool evidence[4]);
 void motion(GridBox gridArray[6][5], char direction, int robotLocation);
-
+int randomNumberGen();//Returns the random number
 int main() {
 	Robot robot = new Robot();
 	GridBox gridArray[6][5];
@@ -45,7 +45,14 @@ int main() {
 	system("Pause");
 	return 0;
 }
-
+int randomNumberGen()
+{
+	int maxNum=100;/*Maximum number to go to*/
+	int num;
+	srand(time(0));
+	num=rand() % max;
+	return num;
+}
 void populateGrid(GridBox gridArray[6][5]) {
 	int currentPosition = 1;
 	for (int i = 0; i < 6; i++) {
