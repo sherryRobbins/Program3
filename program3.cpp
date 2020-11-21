@@ -7,17 +7,19 @@ using namespace std;
 class GridBox {
 public: //attributes
 	double probability;
-	double condProbability;
 	double transProbability;
 	int position;
 	bool isObstacle;
+	float qValue[4];
+	int accessFrequency[4];
 
 	GridBox() { //constructor
 		this->probability = 4.17;
-		this->condProbability = 0;
 		this->transProbability = 0;
 		this->position = -1;
 		this->isObstacle = 0;
+		this->qValue[4] = {0};
+		this->accessFrequency[4] = {0};
 	}
 };
 
@@ -90,290 +92,89 @@ void displayGrid(GridBox gridArray[6][5]) {
 	}
 }
 
-/*Purpose: Handles the robot's sensing as well as filtering after the sensor
-	gridArray: the array where the values of squares are kept
-	evidence: the obstacles that the robot sensed
-*/
-void sensing(GridBox gridArray[6][5], bool evidence[4]) {
-	//Following code block is evidence conditional probability
-	double probability[4];
-	double total = 0;
-	for (int i = 0; i < 6; i++) { //we iterate through the grid
-		for (int j = 0; j < 5; j++) {
-			if (gridArray[i][j].isObstacle != 1) {//if not an obstacle then sense for obstacles
-				//check west
-				if (j == 0) {
-					if (evidence[0] == 1)
-						probability[0] = .75;
-					else
-						probability[0] = .25;
-				}
-				else if (gridArray[i][j - 1].isObstacle == 1) {
-					if (evidence[0] == 1) {
-						probability[0] = .75;
-					}
-					else
-						probability[0] = .25;
-				}
-				else if (gridArray[i][j - 1].isObstacle == 0) {
-					if (evidence[0] == 1)
-						probability[0] = .2;
-					else
-						probability[0] = .8;
-				}
-				//check north
-				if (i == 0) {
-					if (evidence[1] == 1)
-						probability[1] = .75;
-					else
-						probability[1] = .25;
-				}
-				else if (gridArray[i - 1][j].isObstacle == 1) {
-					if (evidence[1] == 1)
-						probability[1] = .75;
-					else
-						probability[1] = .25;
-				}
-				else if (gridArray[i - 1][j].isObstacle == 0) {
-					if (evidence[1] == 1)
-						probability[1] = .2;
-					else
-						probability[1] = .8;
-				}
-				//check east
-				if (j == 4) {
-					if (evidence[2] == 1)
-						probability[2] = .75;
-					else
-						probability[2] = .25;
-				}
-				else if (gridArray[i][j + 1].isObstacle == 1) {
-					if (evidence[2] == 1)
-						probability[2] = .75;
-					else
-						probability[2] = .25;
-				}
-				else if (gridArray[i][j + 1].isObstacle == 0) {
-					if (evidence[2] == 1)
-						probability[2] = .2;
-					else
-						probability[2] = .8;
-				}
-				//check south
-				if (i == 5) {
-					if (evidence[3] == 1)
-						probability[3] = .75;
-					else
-						probability[3] = .25;
-				}
-				else if (gridArray[i + 1][j].isObstacle == 1) {
-					if (evidence[3] == 1)
-						probability[3] = .75;
-					else
-						probability[3] = .25;
-				}
-				else if (gridArray[i + 1][j].isObstacle == 0) {
-					if (evidence[3] == 1)
-						probability[3] = .2;
-					else
-						probability[3] = .8;
-				}
-				gridArray[i][j].condProbability = probability[0] * probability[1] * probability[2] * probability[3] * gridArray[i][j].probability;
-				total += gridArray[i][j].condProbability;
-			}
-		}
-	}
-	for (int i = 0; i < 6; i++) { //now we conduct the filtering here
-		for (int j = 0; j < 5; j++) {
-			if (gridArray[i][j].isObstacle != 1) {
-				gridArray[i][j].probability = (gridArray[i][j].condProbability / total) * 100;
-			}
-		}
-	}
-}
+
 /* Purpose: handles the robot's motion as well as prediction after the motion
 	gridArray: the array that stores values of squares
 	direction: the direction the robot is moving in
 	*/
 int motion(GridBox gridArray[6][5], char direction, int robotLocation) {
+	int val;	
 	//This switch statement finds if we end up drifting or not
 	switch (direction) {
 		case 'W':
 			char actualDirection[3]; //0 is north, 1 is south, 2 is west
 			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-			//TODO: implement RNG function    direction = rngPicker();
+			val = randomNumberGen();
+			if(val <= 15)
+				direction = 'N';
+			else if (val > 15 && val <= 30)
+				direction = 'S';
+			else
+				direction = 'W';
 			break;
 		case 'N':
-			//TODO
+			char actualDirection[3]; //0 is west, 1 is east, 2 is north
+			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
+			val = randomNumberGen();
+			if(val <= 15)
+				direction = 'W';
+			else if (val > 15 && val <= 30)
+				direction = 'E';
+			else
+				direction = 'N';
 			break;
 		case 'E':
-			//TODO
+			char actualDirection[3]; //0 is north, 1 is south, 2 is east
+			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
+			val = randomNumberGen();
+			if(val <= 15)
+				direction = 'N';
+			else if (val > 15 && val <= 30)
+				direction = 'S';
+			else
+				direction = 'E';
 			break;
 		case 'S':
-			//TODO
+			char actualDirection[3]; //0 is west, 1 is east, 2 is south
+			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
+			val = randomNumberGen();
+			if(val <= 15)
+				direction = 'W';
+			else if (val > 15 && val <= 30)
+				direction = 'E';
+			else
+				direction = 'S';
 			break;
 	}
-	int reward;
+	int reward, directionInt;
 	double probability[4];
+	int robotPos[2];
 	//This switch statement performs the actual movement
 	switch (direction) {
-		//TODO: take robot position and update based on movement
-		//Translate robot location to row and column of grid: first step is divide by 5 to find the row
+		//Translate robot location to row and column of grid
+		robotPos[0] = (robotLocation / 6); //row
+		robotPos[1] = (robotLocation % 5) - 1; //column; we subtract 1 so that it translates into an array value nicely
+		
 		case 'W':
+			gridArray[robotPos[0]][robotPos[1]].accessFrequency[0] += 1;
 			reward = -2;
-			for (int i = 0; i < 6; i++) { //we iterate through the grid
-				for (int j = 0; j < 5; j++) {
-					if (gridArray[i][j].isObstacle != 1) {//we only check motion for open squares
-						//check west probability. this only matters if it is an obstacle as this can affect prediction
-						if (j == 0)
-							probability[0] = .7 * gridArray[i][j].probability;
-						else if (gridArray[i][j - 1].isObstacle == 1)
-							probability[0] = .7 * gridArray[i][j].probability;
-						else
-							probability[0] = 0;
-						//check north probability
-						if (i == 0) //we only have a chance of moving into this square from the north if it drifted or bounced
-							probability[1] = .15 * gridArray[i][j].probability;
-						else if (gridArray[i - 1][j].isObstacle == 1)
-							probability[1] = .15 * gridArray[i][j].probability;
-						else
-							probability[1] = .15 * gridArray[i - 1][j].probability;
-						//check east probability. this is because we see the chance the robot moved from the east into this square
-						if (j == 4)
-							probability[2] = 0;
-						else if (gridArray[i][j + 1].isObstacle == 1)
-							probability[2] = 0;
-						else
-							probability[2] = .7 * gridArray[i][j + 1].probability;
-						//check south probability
-						if (i == 5) //we only have a chance of moving into this square from the south if it drifted or bounced
-							probability[3] = .15 * gridArray[i][j].probability;
-						else if (gridArray[i + 1][j].isObstacle == 1)
-							probability[3] = .15 * gridArray[i][j].probability;
-						else
-							probability[3] = .15 * gridArray[i + 1][j].probability;
-					}
-					//this section covers prediction
-					gridArray[i][j].transProbability = ((probability[0] + probability[1] + probability[2] + probability[3]));
-				}
-			}
+			directionInt = 1;
+			//TODO: Implement movement, and possible bouncing.
 			break;
 		case 'N':
+			gridArray[robotPos[0]][robotPos[1]].accessFrequency[1] += 1;
 			reward = -3;
-			for (int i = 0; i < 6; i++) { //we iterate through the grid
-				for (int j = 0; j < 5; j++) {
-					if (gridArray[i][j].isObstacle != 1) {//we only check motion for open squares
-						//check west probability. we only have a chance of moving from the west if the robot drifted or bounced
-						if (j == 0)
-							probability[0] = .15 * gridArray[i][j].probability;
-						else if (gridArray[i][j - 1].isObstacle == 1)
-							probability[0] = .15 * gridArray[i][j].probability;
-						else
-							probability[0] = .15 * gridArray[i][j-1].probability;
-						//check north probability
-						if (i == 0) //this only matters if it is an obstacle as this can affect prediction
-							probability[1] = .7 * gridArray[i][j].probability;
-						else if (gridArray[i - 1][j].isObstacle == 1)
-							probability[1] = .7 * gridArray[i][j].probability;
-						else
-							probability[1] = 0;
-						//check east probability. we only have a chance of moving from the east if the robot drifted or bounced
-						if (j == 4)
-							probability[2] = .15 * gridArray[i][j].probability;
-						else if (gridArray[i][j + 1].isObstacle == 1)
-							probability[2] = .15 * gridArray[i][j].probability;
-						else
-							probability[2] = .15 * gridArray[i][j + 1].probability;
-						//check south probability
-						if (i == 5) //this is because we see the chance the robot moved from the south into this square
-							probability[3] = 0;
-						else if (gridArray[i + 1][j].isObstacle == 1)
-							probability[3] = 0;
-						else
-							probability[3] = .7 * gridArray[i + 1][j].probability;
-					}
-					//this section covers prediction
-					gridArray[i][j].transProbability = ((probability[0] + probability[1] + probability[2] + probability[3]));
-				}
-			}
+			directionInt = 2;
 			break;
 		case 'E':
+			gridArray[robotPos[0]][robotPos[1]].accessFrequency[2] += 1;
 			reward = -2;
-			for (int i = 0; i < 6; i++) { //we iterate through the grid
-				for (int j = 0; j < 5; j++) {
-					if (gridArray[i][j].isObstacle != 1) {//we only check motion for open squares
-						//check west probability. this is because we see the chance the robot moved from the east into this square
-						if (j == 0)
-							probability[0] = 0;
-						else if (gridArray[i][j - 1].isObstacle == 1)
-							probability[0] = 0;
-						else
-							probability[0] = .7 * gridArray[i][j - 1].probability;
-						//check north probability
-						if (i == 0) //we only have a chance of moving into this square from the north if it drifted or bounced
-							probability[2] = 0;
-						else if (gridArray[i - 1][j].isObstacle == 1)
-							probability[2] = 0;
-						else
-							probability[2] = .7 * gridArray[i - 1][j].probability;
-						//check east probability. this only matters if it is an obstacle as this can affect prediction
-						if (j == 4)
-							probability[2] = .7 * gridArray[i][j].probability;
-						else if (gridArray[i][j + 1].isObstacle == 1)
-							probability[2] = .7 * gridArray[i][j].probability;
-						else
-							probability[2] = 0;
-						//check south probability
-						if (i == 5) //we only have a chance of moving into this square from the south if it drifted or bounced
-							probability[3] = .15 * gridArray[i][j].probability;
-						else if (gridArray[i + 1][j].isObstacle == 1)
-							probability[3] = .15 * gridArray[i][j].probability;
-						else
-							probability[3] = .15 * gridArray[i + 1][j].probability;
-					}
-					//this section covers prediction
-					gridArray[i][j].transProbability = ((probability[0] + probability[1] + probability[2] + probability[3]));
-				}
-			}
+			directionInt = 3;
 			break;		
 		case 'S':
+			gridArray[robotPos[0]][robotPos[1]].accessFrequency[3] += 1;
 			reward = -1;
-			for (int i = 0; i < 6; i++) { //we iterate through the grid
-				for (int j = 0; j < 5; j++) {
-					if (gridArray[i][j].isObstacle != 1) {//we only check motion for open squares
-						//check west probability. we only have a chance of moving into this square from the west if it drifted or bounced
-						if (j == 0)
-							probability[3] = .15 * gridArray[i][j].probability;
-						else if (gridArray[i][j - 1].isObstacle == 1)
-							probability[3] = .15 * gridArray[i][j].probability;
-						else
-							probability[3] = .15 * gridArray[i][j - 1].probability;
-						//check north probability
-						if (i == 0) //this is because we see the chance the robot moved from the north into this square
-							probability[2] = 0;
-						else if (gridArray[i - 1][j].isObstacle == 1)
-							probability[2] = 0;
-						else
-							probability[2] = .7 * gridArray[i - 1][j].probability;
-						//check east probability. we only have a chance of moving into this square from the east if it drifted or bounced
-						if (j == 4)
-							probability[3] = .15 * gridArray[i][j].probability;
-						else if (gridArray[i][j + 1].isObstacle == 1)
-							probability[3] = .15 * gridArray[i][j].probability;
-						else
-							probability[3] = .15 * gridArray[i][j + 1].probability;
-						//check south probability
-						if (i == 5) //this only matters if this is an obstacle as this can affect prediction
-							probability[3] = .7 * gridArray[i][j].probability;
-						else if (gridArray[i + 1][j].isObstacle == 1)
-							probability[3] = .7 * gridArray[i][j].probability;
-						else
-							probability[3] = 0;
-					}
-					//this section covers prediction
-					gridArray[i][j].transProbability = ((probability[0] + probability[1] + probability[2] + probability[3]));
-				}
-			}
+			directionInt = 4;
 			break;
 	}
 	for (int i = 0; i < 6; i++) {
@@ -381,4 +182,8 @@ int motion(GridBox gridArray[6][5], char direction, int robotLocation) {
 			gridArray[i][j].probability = gridArray[i][j].transProbability;
 		}
 	}
+	int tuple[2];
+	tuple[0] = directionInt;
+	tuple[1] = reward;
+	return tuple;
 }
