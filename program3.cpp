@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include<cstdlib>/*Used for the random number generator*/
+
 using namespace std;
 
 class GridBox {
@@ -18,8 +19,8 @@ public: //attributes
 		this->transProbability = 0;
 		this->position = -1;
 		this->isObstacle = 0;
-		this->qValue[4] = {0};
-		this->accessFrequency[4] = {0};
+		this->qValue[4] = { 0 };
+		this->accessFrequency[4] = { 0 };
 	}
 };
 
@@ -27,7 +28,7 @@ class Robot {
 public:
 	int location;
 	int reward;
-	
+
 	Robot() {
 		this->location = -1;
 		this->reward = 0;
@@ -36,23 +37,23 @@ public:
 
 void populateGrid(GridBox gridArray[6][5]);
 void displayGrid(GridBox gridArray[6][5]);
-void sensing(GridBox gridArray[6][5], bool evidence[4]);
-void motion(GridBox gridArray[6][5], char direction, int robotLocation);
-int randomNumberGen();//Returns the random number
+int *motion(GridBox gridArray[6][5], char direction, int robotLocation);
+int randomNumberGen(int maxNum);//Returns the random number
+int* findRobotLocation(int robotLocation);
 int main() {
-	Robot robot = new Robot();
+	Robot robot = Robot();
 	GridBox gridArray[6][5];
 	populateGrid(gridArray);
-	
+
 	system("Pause");
+	delete gridArray;
 	return 0;
 }
-int randomNumberGen()
+int randomNumberGen(int maxNum)
 {
-	int maxNum=100;/*Maximum number to go to*/
 	int num;
 	srand(time(0));
-	num=rand() % max;
+	num = rand() % (maxNum + 1);
 	return num;
 }
 void populateGrid(GridBox gridArray[6][5]) {
@@ -97,54 +98,51 @@ void displayGrid(GridBox gridArray[6][5]) {
 	gridArray: the array that stores values of squares
 	direction: the direction the robot is moving in
 	*/
-int motion(GridBox gridArray[6][5], char direction, int robotLocation) {
-	int val;	
+int *motion(GridBox gridArray[6][5], char direction, int robotLocation) {
+	int val;
+	char actualDirection[3];
 	//This switch statement finds if we end up drifting or not
 	switch (direction) {
-		case 'W':
-			char actualDirection[3]; //0 is north, 1 is south, 2 is west
-			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-			val = randomNumberGen();
-			if(val <= 15)
-				direction = 'N';
-			else if (val > 15 && val <= 30)
-				direction = 'S';
-			else
-				direction = 'W';
-			break;
-		case 'N':
-			char actualDirection[3]; //0 is west, 1 is east, 2 is north
-			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-			val = randomNumberGen();
-			if(val <= 15)
-				direction = 'W';
-			else if (val > 15 && val <= 30)
-				direction = 'E';
-			else
-				direction = 'N';
-			break;
-		case 'E':
-			char actualDirection[3]; //0 is north, 1 is south, 2 is east
-			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-			val = randomNumberGen();
-			if(val <= 15)
-				direction = 'N';
-			else if (val > 15 && val <= 30)
-				direction = 'S';
-			else
-				direction = 'E';
-			break;
-		case 'S':
-			char actualDirection[3]; //0 is west, 1 is east, 2 is south
-			actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-			val = randomNumberGen();
-			if(val <= 15)
-				direction = 'W';
-			else if (val > 15 && val <= 30)
-				direction = 'E';
-			else
-				direction = 'S';
-			break;
+	case 'W':
+		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
+		val = randomNumberGen(100);
+		if (val <= 15) //0 is north, 1 is south, 2 is west
+			direction = 'N';
+		else if (val > 15 && val <= 30)
+			direction = 'S';
+		else
+			direction = 'W';
+		break;
+	case 'N':
+		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
+		val = randomNumberGen(100);
+		if (val <= 15) //0 is west, 1 is east, 2 is north
+			direction = 'W';
+		else if (val > 15 && val <= 30)
+			direction = 'E';
+		else
+			direction = 'N';
+		break;
+	case 'E':
+		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
+		val = randomNumberGen(100);
+		if (val <= 15)  //0 is north, 1 is south, 2 is east
+			direction = 'N';
+		else if (val > 15 && val <= 30)
+			direction = 'S';
+		else
+			direction = 'E';
+		break;
+	case 'S':
+		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
+		val = randomNumberGen(100);
+		if (val <= 15) //0 is west, 1 is east, 2 is south
+			direction = 'W';
+		else if (val > 15 && val <= 30)
+			direction = 'E';
+		else
+			direction = 'S';
+		break;
 	}
 	int reward, directionInt;
 	double probability[4];
@@ -154,36 +152,97 @@ int motion(GridBox gridArray[6][5], char direction, int robotLocation) {
 		//Translate robot location to row and column of grid
 		robotPos[0] = (robotLocation / 6); //row
 		robotPos[1] = (robotLocation % 5) - 1; //column; we subtract 1 so that it translates into an array value nicely
-		
-		case 'W':
-			gridArray[robotPos[0]][robotPos[1]].accessFrequency[0] += 1;
-			reward = -2;
-			directionInt = 1;
-			//TODO: Implement movement, and possible bouncing.
-			break;
-		case 'N':
-			gridArray[robotPos[0]][robotPos[1]].accessFrequency[1] += 1;
-			reward = -3;
-			directionInt = 2;
-			break;
-		case 'E':
-			gridArray[robotPos[0]][robotPos[1]].accessFrequency[2] += 1;
-			reward = -2;
-			directionInt = 3;
-			break;		
-		case 'S':
-			gridArray[robotPos[0]][robotPos[1]].accessFrequency[3] += 1;
-			reward = -1;
-			directionInt = 4;
-			break;
+
+	case 'W':
+		gridArray[robotPos[0]][robotPos[1]].accessFrequency[0] += 1;
+		reward = -2;
+		directionInt = 1;
+		//TODO: Implement movement, and possible bouncing.
+		break;
+	case 'N':
+		gridArray[robotPos[0]][robotPos[1]].accessFrequency[1] += 1;
+		reward = -3;
+		directionInt = 2;
+		break;
+	case 'E':
+		gridArray[robotPos[0]][robotPos[1]].accessFrequency[2] += 1;
+		reward = -2;
+		directionInt = 3;
+		break;
+	case 'S':
+		gridArray[robotPos[0]][robotPos[1]].accessFrequency[3] += 1;
+		reward = -1;
+		directionInt = 4;
+		break;
 	}
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 5; j++) {
 			gridArray[i][j].probability = gridArray[i][j].transProbability;
 		}
 	}
-	int tuple[2];
-	tuple[0] = directionInt;
-	tuple[1] = reward;
+		int tuple[2];
+		tuple[0] = directionInt;
+		tuple[1] = reward;
 	return tuple;
+}
+
+void trial(Robot robot, GridBox gridArray[6][5], int moves = 0) {
+	bool obstacleFound = 1;
+	int startingSquare;
+	if (moves == 0) { //we have to spawn the robot
+		while (obstacleFound) {
+			startingSquare = randomNumberGen(30);
+			int squareInGrid[2]; //this is for translating the integer value into the array
+
+			squareInGrid[0] = (startingSquare / 6); //row
+			squareInGrid[1] = (startingSquare % 5) - 1; //column
+
+			int i = squareInGrid[0];
+			int j = squareInGrid[1];
+			if (gridArray[i][j].isObstacle == 0) {
+				obstacleFound = 0;
+			}
+		}
+
+		robot.location = startingSquare;
+	}
+	//TODO: Add function for choosing optimal policy vs random action and then motion based on the action
+
+	if (moves != 100) {//base case
+		trial(robot, gridArray, ++moves);
+	}
+}
+
+char findAction(GridBox gridArray[6][5], int robotLocation) {
+	int value = randomNumberGen(100);
+	char direction;
+	int *robotPos;
+	if (value <= 5) {
+		value = randomNumberGen(4);
+		switch (value) {
+			case 1: //choose west
+				direction = 'W';
+				break;
+			case 2: //choose north
+				direction = 'N';
+				break;
+			case 3: //choose east
+				direction = 'E'; 
+				break;
+			case 4: //choose south
+				direction = 'S';
+				break;
+		}
+	}
+	else {
+		robotPos = findRobotLocation(robotLocation);
+	}
+	return direction;
+}
+
+int* findRobotLocation(int robotLocation) {
+	int robotPos[2];
+	robotPos[0] = (robotLocation / 6); //row
+	robotPos[1] = (robotLocation % 5) - 1; //column
+	return robotPos;
 }
