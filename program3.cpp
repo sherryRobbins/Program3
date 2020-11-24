@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <conio.h>
 #include<cstdlib>/*Used for the random number generator*/
 
 using namespace std;
@@ -42,14 +43,22 @@ void displayGrid(GridBox gridArray[6][5]);
 int *motion(GridBox gridArray[6][5], char direction, int robotLocation);
 int randomNumberGen(int maxNum);//Returns the random number
 int* findLocation(int robotLocation);
+int* findLocation(int *robotLocation);
 void trial(int robotLocation, GridBox gridArray[6][5], int moves);
 char findAction(GridBox gridArray[6][5], int robotLocation);
 float max(float array[]);
+void updateQValues(GridBox gridArray[6][5], int tuple[5]);
 
 int main() {
 	Robot robot = Robot();
 	GridBox gridArray[6][5];
 	populateGrid(gridArray);
+	int i = 0;
+	while (i < 10000) {
+		trial(robot.location, gridArray, 0);
+		i++;
+	}
+
 	system("Pause");
 	return 0;
 }
@@ -85,7 +94,31 @@ void populateGrid(GridBox gridArray[6][5]) {
 }
 
 void displayGrid(GridBox gridArray[6][5]) {
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 6; i++) { //access frequency table
+		for (int j = 0; j < 5; j++) {
+			if (gridArray[i][j].isObstacle == 1) {
+				cout << "####" << "  ";
+			}
+			else {
+				cout << "   " << gridArray[i][j].accessFrequency[1] << setw(20);
+			}
+			if ((gridArray[i][j].position % 5) == 0)
+				cout << std::endl;
+		}
+	}
+	for (int i = 0; i < 6; i++) { //q-value table
+		for (int j = 0; j < 5; j++) {
+			if (gridArray[i][j].isObstacle == 1) {
+				cout << "####" << "  ";
+			}
+			else
+				cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
+
+			if ((gridArray[i][j].position % 5) == 0)
+				cout << std::endl;
+		}
+	}
+	for (int i = 0; i < 6; i++) { //optimal policy table
 		for (int j = 0; j < 5; j++) {
 			if (gridArray[i][j].isObstacle == 1) {
 				cout << "####" << "  ";
@@ -249,6 +282,7 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0) {
 	//TODO: set a tuple variable to the result of motion so we can update the q-values
 	tuple = motion(gridArray, direction, robotLocation);
 	//TODO: function that updates q-values
+	updateQValues(gridArray, tuple);
 	if (moves != 101) {//base case
 		trial(robotLocation, gridArray, ++moves);
 	}
@@ -262,7 +296,7 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0) {
 */
 char findAction(GridBox gridArray[6][5], int robotLocation) {
 	int value = randomNumberGen(100);
-	char direction;
+	char direction = 'X';
 	int *robotPos;
 	if (value <= 5) { //this is our implementation of epsilon-greedy reinforcement learning. 5% chance the robot chooses a random action rather than the optimal policy
 		value = randomNumberGen(4);
@@ -285,7 +319,7 @@ char findAction(GridBox gridArray[6][5], int robotLocation) {
 		robotPos = findLocation(robotLocation);
 		int i = robotPos[0];
 		int j = robotPos[1];
-		int index;
+		int index = 0;
 		float maxQValue = max(gridArray[i][j].qValue);
 		for (int i = 0; i < 4; i++) {
 			if (maxQValue == gridArray[i][j].qValue[i]) {
@@ -325,6 +359,22 @@ int* findLocation(int location) {
 	return position;
 }
 
+int* findLocation(int *location) {
+	int foundLocation = *location;
+	static int position[2];
+	//in case things get wonky it is possible there is an issue here
+	if (foundLocation % 5 != 0) {
+		position[0] = (foundLocation / 5); //row
+		position[1] = (foundLocation % 5) - 1; //column
+	}
+	else {
+		position[0] = (foundLocation / 5) - 1;
+		position[1] = 4;
+	}
+
+	return position;
+}
+
 /*
 	updateQValues
 	purpose: updates the q values of the box in the grid after the robot takes its action
@@ -335,10 +385,11 @@ void updateQValues(GridBox gridArray[6][5], int tuple[5]) {
 	int *currentState = findLocation(tuple[0]); //finds robot's current location
 	int currentAction = tuple[1];
 	int reward = tuple[2];
-	int* nextState = findLocation(tuple[3]);
+	int *nextState = findLocation(tuple[3]);
+	int *nextStateLocation = findLocation(nextState);
 	int nextAction = tuple[4];
-	int i = currentState[0]; int j = currentState[1];
-	gridArray[i][j].qValue[currentAction - 1] = (1 / gridArray[i][j].accessFrequency[currentAction - 1]) * (reward + .9 * max(nextState) - gridArray[i][j].qValue[currentAction - 1]);
+	int i = currentState[0]; int j = currentState[1]; int k = nextStateLocation[0]; int l = nextStateLocation[1];
+	gridArray[i][j].qValue[currentAction - 1] = (1 / gridArray[i][j].accessFrequency[currentAction - 1]) * (reward + .9 * max(gridArray[k][l].qValue) - gridArray[i][j].qValue[currentAction - 1]);
 
 }
 
