@@ -42,11 +42,11 @@ void populateGrid(GridBox gridArray[6][5]);
 void displayGrid(GridBox gridArray[6][5]);
 int *motion(GridBox gridArray[6][5], char direction, int robotLocation);
 int randomNumberGen(int maxNum);//Returns the random number
+float max(float array[]);
 int* findLocation(int robotLocation);
 int* findLocation(int *robotLocation);
 void trial(int robotLocation, GridBox gridArray[6][5], int moves);
 char findAction(GridBox gridArray[6][5], int robotLocation);
-float max(float array[]);
 void updateQValues(GridBox gridArray[6][5], int tuple[5]);
 
 int main() {
@@ -138,7 +138,8 @@ void displayGrid(GridBox gridArray[6][5]) {
 	direction: the direction the robot is moving in
 	*/
 int *motion(GridBox gridArray[6][5], char action, int state) {
-	int tuple[5];
+	cout << "Action is: " << action;
+	static int tuple[5];
 	tuple[0] = state; //'state' value in the tuple
 	int val, directionInt, nextActionInt;
 	char direction, nextAction;
@@ -153,8 +154,10 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 			direction = 'N';
 		else if (val > 15 && val <= 30)
 			direction = 'S';
-		else
+		else {
+			cout << "We did not drift.\n";
 			direction = 'W';
+		}
 		break;
 	case 'N':
 		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
@@ -164,8 +167,10 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 			direction = 'W';
 		else if (val > 15 && val <= 30)
 			direction = 'E';
-		else
+		else {
+			cout << "We did not drift.\n";
 			direction = 'N';
+		}
 		break;
 	case 'E':
 		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
@@ -175,8 +180,10 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 			direction = 'N';
 		else if (val > 15 && val <= 30)
 			direction = 'S';
-		else
+		else {
+			cout << "We did not drift.\n";
 			direction = 'E';
+		}
 		break;
 	case 'S':
 		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
@@ -186,8 +193,10 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 			direction = 'W';
 		else if (val > 15 && val <= 30)
 			direction = 'E';
-		else
+		else{
+			cout << "We did not drift.\n";
 			direction = 'S';
+		}
 		break;
 	}
 	int reward = 0;
@@ -264,10 +273,9 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0) {
 	if (moves == 0) { //we have to spawn the robot
 		while (obstacleFound) {
 			startingSquare = randomNumberGen(30);
-			int squareInGrid[2]; //this is for translating the integer value into the array
+			int *squareInGrid; //this is for translating the integer value into the array
 
-			squareInGrid[0] = (startingSquare / 6); //row
-			squareInGrid[1] = (startingSquare % 5) - 1; //column
+			squareInGrid = findLocation(startingSquare);
 
 			int i = squareInGrid[0];
 			int j = squareInGrid[1];
@@ -296,10 +304,11 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0) {
 */
 char findAction(GridBox gridArray[6][5], int robotLocation) {
 	int value = randomNumberGen(100);
-	char direction = 'X';
+	char direction;
 	int *robotPos;
 	if (value <= 5) { //this is our implementation of epsilon-greedy reinforcement learning. 5% chance the robot chooses a random action rather than the optimal policy
 		value = randomNumberGen(4);
+		cout << "We chose a random direction!\n";
 		switch (value) {
 			case 1: //choose west
 				direction = 'W';
@@ -319,14 +328,26 @@ char findAction(GridBox gridArray[6][5], int robotLocation) {
 		robotPos = findLocation(robotLocation);
 		int i = robotPos[0];
 		int j = robotPos[1];
-		int index = 0;
+		int maxQValues[4];
+		int index = -1;
+		int maxCount = 0;
 		float maxQValue = max(gridArray[i][j].qValue);
-		for (int i = 0; i < 4; i++) {
-			if (maxQValue == gridArray[i][j].qValue[i]) {
-				index = i;
-				break;
+		//TODO: this sometimes gives an incredibly negative Index and we need to figure out why
+		for (int k = 0; k < 4; k++) {
+			if (maxQValue == gridArray[i][j].qValue[k]) {
+				maxQValues[maxCount] = k;
+				maxCount++;
 			}
 		}
+		cout << "Why the hell is maxCount " << maxCount << endl;
+		if (maxCount > 1) {
+			value = randomNumberGen(maxCount);
+			index = maxQValues[value - 1];
+			cout << "Index is: " << index << endl;
+		}
+		else
+			index = maxQValues[0];
+		cout << "NOW Index is: " << index << endl;
 		switch (index) {
 			case 0:
 				direction = 'W';
@@ -339,6 +360,9 @@ char findAction(GridBox gridArray[6][5], int robotLocation) {
 				break;
 			case 3:
 				direction = 'S';
+				break;
+			case -1:
+				cout << "The direction did not match any cases.\n";
 				break;
 		}
 	}
@@ -393,7 +417,7 @@ void updateQValues(GridBox gridArray[6][5], int tuple[5]) {
 
 }
 
-float max(int array[]) {
+float max(float array[]) {
 	float max = array[0];
 	for (int i = 1; i < sizeof(array); i++) {
 		if (array[i] > max)
