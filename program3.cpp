@@ -48,6 +48,7 @@ int* findLocation(int *robotLocation);
 void trial(int robotLocation, GridBox gridArray[6][5], int moves);
 char findAction(GridBox gridArray[6][5], int robotLocation);
 void updateQValues(GridBox gridArray[6][5], int tuple[5]);
+bool compareTo(float A, float B, float epsilon= 0.005f);
 
 int main() {
 	Robot robot = Robot();
@@ -67,7 +68,7 @@ int randomNumberGen(int maxNum)
 {
 	int num;
 	srand(time(0));
-	num = rand() % (maxNum + 1);
+	num = rand() % maxNum;
 	return num;
 }
 
@@ -144,12 +145,17 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 	int val, directionInt, nextActionInt;
 	char direction, nextAction;
 	char actualDirection[3];
+	int* robotPos;
+	robotPos = findLocation(state);
+	int i = robotPos[0];
+	int j = robotPos[1];
 	//This switch statement finds if we end up drifting or not
 	switch (action) {
 	case 'W':
 		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-		val = randomNumberGen(100);
-		directionInt = 1; //for tuple
+		val = randomNumberGen(100) + 1;
+		gridArray[i][j].accessFrequency[0] += 1;
+		directionInt = 0; //for tuple
 		if (val <= 15) //0 is north, 1 is south, 2 is west
 			direction = 'N';
 		else if (val > 15 && val <= 30)
@@ -161,8 +167,9 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 		break;
 	case 'N':
 		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-		val = randomNumberGen(100);
-		directionInt = 2;
+		val = randomNumberGen(100) + 1;
+		gridArray[i][j].accessFrequency[1] += 1;
+		directionInt = 1;
 		if (val <= 15) //0 is west, 1 is east, 2 is north
 			direction = 'W';
 		else if (val > 15 && val <= 30)
@@ -174,8 +181,9 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 		break;
 	case 'E':
 		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-		val = randomNumberGen(100);
-		directionInt = 3;
+		val = randomNumberGen(100) + 1;
+		gridArray[i][j].accessFrequency[2] += 1;
+		directionInt = 2;
 		if (val <= 15)  //0 is north, 1 is south, 2 is east
 			direction = 'N';
 		else if (val > 15 && val <= 30)
@@ -187,8 +195,9 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 		break;
 	case 'S':
 		actualDirection[0] = 15; actualDirection[1] = 30; actualDirection[2] = 100;
-		val = randomNumberGen(100);
-		directionInt = 4;
+		val = randomNumberGen(100) + 1;
+		gridArray[i][j].accessFrequency[3] += 1;
+		directionInt = 3;
 		if (val <= 15) //0 is west, 1 is east, 2 is south
 			direction = 'W';
 		else if (val > 15 && val <= 30)
@@ -199,63 +208,61 @@ int *motion(GridBox gridArray[6][5], char action, int state) {
 		}
 		break;
 	}
+
 	int reward = 0;
 	double probability[4];
-	int* robotPos;
-	robotPos = findLocation(state);
-	int i = robotPos[0];
-	int j = robotPos[1];
 	cout << robotPos[0] << "   " << robotPos[1];
 	//This switch statement performs the actual movement
 	switch (direction) {
-		//Translate robot location to row and column of grid
-
-	case 'W':
-		gridArray[i][j].accessFrequency[0] += 1;
-		reward = -2; //for tuple
-		if (gridArray[i][j - 1].isObstacle == 0) {
-			state -= 1; //moving the robot
-		}
-		nextAction = findAction(gridArray, state);
-		break;
-	case 'N':
-		gridArray[i][j].accessFrequency[1] += 1;
-		reward = -3;
-		if (gridArray[i - 1][j].isObstacle == 0) {
-			state -= 5; //moving the robot
-		}
-		nextAction = findAction(gridArray, state);
-		break;
-	case 'E':
-		gridArray[i][j].accessFrequency[2] += 1;
-		reward = -2;
-		if (gridArray[i][j + 1].isObstacle == 0) {
-			state += 1; //moving the robot
-		}
-		nextAction = findAction(gridArray, state);
-		break;
-	case 'S':
-		gridArray[i][j].accessFrequency[3] += 1;
-		reward = -1;
-		if (gridArray[i + 1][j].isObstacle == 0) {
-			state += 5; //moving the robot
-		}
-		nextAction = findAction(gridArray, state);
-		break;
+		case 'W':
+			reward = -2; //for tuple
+			if (j != 0) {//if this is not the edge of the maze
+				if (gridArray[i][j - 1].isObstacle == 0) {
+					state -= 1; //moving the robot
+				}
+			}
+			break;
+		case 'N':
+			reward = -3;
+			if (i != 0) {//if this is not the edge of the maze
+				if (gridArray[i - 1][j].isObstacle == 0) {
+					state -= 5; //moving the robot
+				}
+			}
+			break;
+		case 'E':
+			reward = -2;
+			if (j != 4) {//if this is not the edge of the maze
+				if (gridArray[i][j + 1].isObstacle == 0) {
+					state += 1; //moving the robot
+				}
+			}
+			break;
+		case 'S':
+			reward = -1;
+			if (i != 5) {//if this is not the edge of the maze
+				if (gridArray[i + 1][j].isObstacle == 0) {
+					state += 5; //moving the robot
+				}
+			}
+			break;
 	}
+
+	nextAction = findAction(gridArray, state);
+	
 	switch (nextAction) {
-	case 'W':
-		nextActionInt = 1;
-		break;
-	case 'N':
-		nextActionInt = 2;
-		break;
-	case 'E':
-		nextActionInt = 3;
-		break;
-	case 'S':
-		nextActionInt = 4;
-		break;
+		case 'W':
+			nextActionInt = 1;
+			break;
+		case 'N':
+			nextActionInt = 2;
+			break;
+		case 'E':
+			nextActionInt = 3;
+			break;
+		case 'S':
+			nextActionInt = 4;
+			break;
 	}
 		tuple[1] = directionInt; //current action in tuple
 		tuple[2] = reward; //reward in tuple
@@ -272,7 +279,7 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0) {
 	int *tuple;
 	if (moves == 0) { //we have to spawn the robot
 		while (obstacleFound) {
-			startingSquare = randomNumberGen(30);
+			startingSquare = randomNumberGen(30) + 1;
 			int *squareInGrid; //this is for translating the integer value into the array
 
 			squareInGrid = findLocation(startingSquare);
@@ -303,11 +310,11 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0) {
 		robotLocation: the robot's location in integer value
 */
 char findAction(GridBox gridArray[6][5], int robotLocation) {
-	int value = randomNumberGen(100);
+	int value = randomNumberGen(100) + 1;
 	char direction;
 	int *robotPos;
 	if (value <= 5) { //this is our implementation of epsilon-greedy reinforcement learning. 5% chance the robot chooses a random action rather than the optimal policy
-		value = randomNumberGen(4);
+		value = randomNumberGen(4) + 1;
 		cout << "We chose a random direction!\n";
 		switch (value) {
 			case 1: //choose west
@@ -332,16 +339,15 @@ char findAction(GridBox gridArray[6][5], int robotLocation) {
 		int index = -1;
 		int maxCount = 0;
 		float maxQValue = max(gridArray[i][j].qValue);
-		//TODO: this sometimes gives an incredibly negative Index and we need to figure out why
 		for (int k = 0; k < 4; k++) {
-			if (maxQValue == gridArray[i][j].qValue[k]) {
+			if (compareTo(maxQValue,gridArray[i][j].qValue[k])) {
 				maxQValues[maxCount] = k;
 				maxCount++;
 			}
 		}
 		cout << "Why the hell is maxCount " << maxCount << endl;
 		if (maxCount > 1) {
-			value = randomNumberGen(maxCount);
+			value = randomNumberGen(maxCount) + 1;
 			index = maxQValues[value - 1];
 			cout << "Index is: " << index << endl;
 		}
@@ -361,7 +367,7 @@ char findAction(GridBox gridArray[6][5], int robotLocation) {
 			case 3:
 				direction = 'S';
 				break;
-			case -1:
+			default:
 				cout << "The direction did not match any cases.\n";
 				break;
 		}
@@ -410,10 +416,9 @@ void updateQValues(GridBox gridArray[6][5], int tuple[5]) {
 	int currentAction = tuple[1];
 	int reward = tuple[2];
 	int *nextState = findLocation(tuple[3]);
-	int *nextStateLocation = findLocation(nextState);
 	int nextAction = tuple[4];
-	int i = currentState[0]; int j = currentState[1]; int k = nextStateLocation[0]; int l = nextStateLocation[1];
-	gridArray[i][j].qValue[currentAction - 1] = (1 / gridArray[i][j].accessFrequency[currentAction - 1]) * (reward + .9 * max(gridArray[k][l].qValue) - gridArray[i][j].qValue[currentAction - 1]);
+	int i = currentState[0]; int j = currentState[1]; int k = nextState[0]; int l = nextState[1];
+	gridArray[i][j].qValue[currentAction] = (1 / gridArray[i][j].accessFrequency[currentAction]) * (reward + .9 * max(gridArray[k][l].qValue) - gridArray[i][j].qValue[currentAction]);
 
 }
 
@@ -424,4 +429,9 @@ float max(float array[]) {
 			max = array[i];
 	}
 	return max;
+}
+
+bool compareTo(float A, float B, float epsilon)
+{
+	return (fabs(A - B) < epsilon);
 }
