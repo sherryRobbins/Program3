@@ -49,7 +49,6 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves, int action);
 char findAction(GridBox gridArray[6][5], int robotLocation, int iteration);
 void updateQValues(GridBox gridArray[6][5], int tuple[5]);
 bool compareTo(float A, float B, float epsilon = 0.005f);
-void displayOptimalPolicy(GridBox gridArray[6][5]);
 
 int main() {
 	srand(time(0)); 
@@ -62,7 +61,7 @@ int main() {
 		trial(robot.location, gridArray, 0, -1);
 		i++;
 	}
-	displayOptimalPolicy(gridArray);
+	displayGrid(gridArray);
 	system("Pause");
 	return 0;
 }
@@ -102,47 +101,52 @@ void populateGrid(GridBox gridArray[6][5]) {
 }
 
 void displayGrid(GridBox gridArray[6][5]) {
-	for (int i = 0; i < 6; i++) { //access frequency table
-		for (int j = 0; j < 5; j++) {
-			if (gridArray[i][j].isObstacle == 1) {
-				cout << "####" << "  ";
-			}
-			else {
-				cout << "   " << gridArray[i][j].accessFrequency[1] << setw(20);
-			}
-			if ((gridArray[i][j].position % 5) == 0)
-				cout << std::endl;
-		}
-	}
-	for (int i = 0; i < 6; i++) { //q-value table
-		for (int j = 0; j < 5; j++) {
-			if (gridArray[i][j].isObstacle == 1) {
-				cout << "####" << "  ";
-			}
-			else
-				cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
-
-			if ((gridArray[i][j].position % 5) == 0)
-				cout << std::endl;
-		}
-	}
-	for (int i = 0; i < 6; i++) { //optimal policy table
-		for (int j = 0; j < 5; j++) {
-			if (gridArray[i][j].isObstacle == 1) {
-				cout << "####" << "  ";
-			}
-			else
-				cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
-
-			if ((gridArray[i][j].position % 5) == 0)
-				cout << std::endl;
-		}
-	}
-}
-
-void displayOptimalPolicy(GridBox gridArray[6][5]) {
 	int value, index, maxCount = 0, maxQValues[4];
-	for (int i = 0; i < 6; i++) { //access frequency table
+		//cout << gridArray[i][j].accessFrequency[1] << "  " << gridArray[i][1].accessFrequency[1] << "  " << gridArray[i][2].accessFrequency[1] << "  " << gridArray[i][3].accessFrequency[1] << "  " << gridArray[i][4].accessFrequency[1] << endl;
+	for (int i = 0; i < 6; i++) { //q-value table
+			for (int j = 0; j < 5; j++) {
+				if (gridArray[i][j].isObstacle == 1) {
+					if (i % 2 != 0)
+						cout << "    ";
+					else
+						cout << "####" << "  ";
+				}
+				else {
+					if (j == 0 && i % 2 == 0)
+						cout << "     ";
+					for (int k = 0; k < 2; k++) {
+						for (int l = 0; l < 4; l++) {
+							switch (k) {
+							case 0:
+								cout << left << setw(16) << gridArray[i][j].accessFrequency[1];
+								break;
+							case 1:
+								cout << left << setw(4) << gridArray[i][j].accessFrequency[0] << "  " << gridArray[i][j].accessFrequency[2];
+								break;
+							case 2:
+								cout << left << setw(16) << gridArray[i][j].accessFrequency[3];
+								break;
+							}
+						}
+					}
+				}
+				if ((gridArray[i][j].position % 5) == 0)
+					cout << std::endl;
+			}
+		}
+	//for (int i = 0; i < 6; i++) { //q-value table
+	//	for (int j = 0; j < 5; j++) {
+	//		if (gridArray[i][j].isObstacle == 1) {
+	//			cout << "####" << "  ";
+	//		}
+	//		else
+	//			cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
+
+	//		if ((gridArray[i][j].position % 5) == 0)
+	//			cout << std::endl;
+	//	}
+	//}
+	for (int i = 0; i < 6; i++) { //optimal policy table
 		for (int j = 0; j < 5; j++) {
 			if (gridArray[i][j].isObstacle == 1) {
 				cout << "####" << "  ";
@@ -181,30 +185,6 @@ void displayOptimalPolicy(GridBox gridArray[6][5]) {
 				cout << endl;
 		}
 	}
-	//for (int i = 0; i < 6; i++) { //q-value table
-	//	for (int j = 0; j < 5; j++) {
-	//		if (gridArray[i][j].isObstacle == 1) {
-	//			cout << "####" << "  ";
-	//		}
-	//		else
-	//			cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
-
-	//		if ((gridArray[i][j].position % 5) == 0)
-	//			cout << std::endl;
-	//	}
-	//}
-	//for (int i = 0; i < 6; i++) { //optimal policy table
-	//	for (int j = 0; j < 5; j++) {
-	//		if (gridArray[i][j].isObstacle == 1) {
-	//			cout << "####" << "  ";
-	//		}
-	//		else
-	//			cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
-
-	//		if ((gridArray[i][j].position % 5) == 0)
-	//			cout << std::endl;
-	//	}
-	//}
 }
 
 
