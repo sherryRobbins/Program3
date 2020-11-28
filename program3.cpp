@@ -3,8 +3,6 @@
 #include <iomanip>
 #include <conio.h>
 #include<cstdlib>/*Used for the random number generator*/
-#include <random>
-#include <functional>
 
 using namespace std;
 
@@ -51,20 +49,20 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves, int action);
 char findAction(GridBox gridArray[6][5], int robotLocation, int iteration);
 void updateQValues(GridBox gridArray[6][5], int tuple[5]);
 bool compareTo(float A, float B, float epsilon = 0.005f);
+void displayOptimalPolicy(GridBox gridArray[6][5]);
 
 int main() {
 	srand(time(0)); 
 	Robot robot = Robot();
 	GridBox gridArray[6][5];
-	mt19937::result_type seed = time(0);
 	populateGrid(gridArray);
 	int i = 0;
 	while (i < 10000) {
-		cout << "**********Trial " << i+1 << "**********" << endl;
+		//cout << "**********Trial " << i+1 << "**********" << endl;
 		trial(robot.location, gridArray, 0, -1);
 		i++;
 	}
-
+	displayOptimalPolicy(gridArray);
 	system("Pause");
 	return 0;
 }
@@ -142,13 +140,80 @@ void displayGrid(GridBox gridArray[6][5]) {
 	}
 }
 
+void displayOptimalPolicy(GridBox gridArray[6][5]) {
+	int value, index, maxCount = 0, maxQValues[4];
+	for (int i = 0; i < 6; i++) { //access frequency table
+		for (int j = 0; j < 5; j++) {
+			if (gridArray[i][j].isObstacle == 1) {
+				cout << "####" << "  ";
+			}
+			else {
+				float maxQValue = max(gridArray[i][j].qValue);
+				for (int k = 0; k < 4; k++) {
+					if (compareTo(maxQValue, gridArray[i][j].qValue[k])) {
+						index = k;
+					}
+				}
+				if (gridArray[i][j].position == 13) {
+					cout << "+100  ";
+				}
+				else {
+					switch (index) {
+					case 0:
+						cout << "<<<<  ";
+						break;
+					case 1:
+						cout << "^^^^  ";
+						break;
+					case 2:
+						cout << ">>>>  ";
+						break;
+					case 3:
+						cout << "VVVV  ";
+						break;
+					default:
+						cout << "The direction did not match any cases.\n";
+						break;
+					}
+				}
+			}
+			if ((gridArray[i][j].position % 5) == 0)
+				cout << endl;
+		}
+	}
+	//for (int i = 0; i < 6; i++) { //q-value table
+	//	for (int j = 0; j < 5; j++) {
+	//		if (gridArray[i][j].isObstacle == 1) {
+	//			cout << "####" << "  ";
+	//		}
+	//		else
+	//			cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
+
+	//		if ((gridArray[i][j].position % 5) == 0)
+	//			cout << std::endl;
+	//	}
+	//}
+	//for (int i = 0; i < 6; i++) { //optimal policy table
+	//	for (int j = 0; j < 5; j++) {
+	//		if (gridArray[i][j].isObstacle == 1) {
+	//			cout << "####" << "  ";
+	//		}
+	//		else
+	//			cout << fixed << setprecision(2) << gridArray[i][j].probability << "  ";
+
+	//		if ((gridArray[i][j].position % 5) == 0)
+	//			cout << std::endl;
+	//	}
+	//}
+}
+
 
 /* Purpose: handles the robot's motion as well as prediction after the motion
 	gridArray: the array that stores values of squares
 	direction: the direction the robot is moving in
 	*/
 int* motion(GridBox gridArray[6][5], char action, int state) {
-	cout << "Action is: " << action << endl;
+	//cout << "Action is: " << action << endl;
 	static int tuple[5];
 	tuple[0] = state; //'state' value in the tuple
 	int directionInt, nextActionInt;
@@ -168,14 +233,14 @@ int* motion(GridBox gridArray[6][5], char action, int state) {
 		directionInt = 0; //for tuple
 		if (val <= 15) { //0 is north, 1 is south, 2 is west
 			direction = 'N';
-			cout << "We drifted north\n";
+			//cout << "We drifted north\n";
 		}
 		else if (val > 15 && val <= 30) {
 			direction = 'S';
-			cout << "We drifted south\n";
+			//cout << "We drifted south\n";
 		}
 		else {
-			cout << "We did not drift.\n";
+			//cout << "We did not drift.\n";
 			direction = 'W';
 		}
 		break;
@@ -186,14 +251,14 @@ int* motion(GridBox gridArray[6][5], char action, int state) {
 		directionInt = 1;
 		if (val <= 15) { //0 is west, 1 is east, 2 is north
 			direction = 'W';
-			cout << "We drifted west\n";
+			//cout << "We drifted west\n";
 		}
 		else if (val > 15 && val <= 30) {
 			direction = 'E';
-			cout << "We drifted east\n";
+			//cout << "We drifted east\n";
 		}
 		else {
-			cout << "We did not drift.\n";
+			//cout << "We did not drift.\n";
 			direction = 'N';
 		}
 		break;
@@ -204,15 +269,15 @@ int* motion(GridBox gridArray[6][5], char action, int state) {
 		directionInt = 2;
 		if (val <= 15) { //0 is north, 1 is south, 2 is east
 			direction = 'N';
-			cout << "We drifted north\n";
+			//cout << "We drifted north\n";
 		}
 
 		else if (val > 15 && val <= 30) {
 			direction = 'S';
-			cout << "We drifted south\n";
+			//cout << "We drifted south\n";
 		}
 		else {
-			cout << "We did not drift.\n";
+			//cout << "We did not drift.\n";
 			direction = 'E';
 		}
 		break;
@@ -223,14 +288,14 @@ int* motion(GridBox gridArray[6][5], char action, int state) {
 		directionInt = 3;
 		if (val <= 15) {//0 is west, 1 is east, 2 is south
 			direction = 'W';
-			cout << "We drifted west\n";
+			//cout << "We drifted west\n";
 		}
 		else if (val > 15 && val <= 30) {
 			direction = 'E';
-			cout << "We drifted east\n";
+			//cout << "We drifted east\n";
 		}
 		else {
-			cout << "We did not drift.\n";
+			//cout << "We did not drift.\n";
 			direction = 'S';
 		}
 		break;
@@ -274,6 +339,9 @@ int* motion(GridBox gridArray[6][5], char action, int state) {
 		break;
 	}
 
+	if (state == 13) {
+		reward = 100;
+	}
 	nextAction = findAction(gridArray, state, 1);
 
 	switch (nextAction) {
@@ -338,11 +406,14 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0, int action
 		}
 	}
 	//TODO: set a tuple variable to the result of motion so we can update the q-values
-	cout << "//////////Motion " << moves << "//////////" << endl << endl;
+	//cout << "//////////Motion " << moves << "//////////" << endl << endl;
 	tuple = motion(gridArray, direction, robotLocation);
 	robotLocation = tuple[3];
 	//TODO: function that updates q-values
 	updateQValues(gridArray, tuple);
+	if (tuple[2] == 100) {
+		moves = 100;
+	}
 	if (moves != 100) {//base case
 		trial(robotLocation, gridArray, ++moves, tuple[4]);
 	}
@@ -360,7 +431,7 @@ char findAction(GridBox gridArray[6][5], int robotLocation, int iteration) {
 	int* robotPos;
 	if (value <= 5) { //this is our implementation of epsilon-greedy reinforcement learning. 5% chance the robot chooses a random action rather than the optimal policy
 		value = randomNumberGen(100);
-		cout << "We chose a random direction!\n";
+		//cout << "We chose a random direction!\n";
 		if (value <= 25)
 			direction = 'W';
 		else if (value > 25 && value <= 50)
@@ -375,7 +446,7 @@ char findAction(GridBox gridArray[6][5], int robotLocation, int iteration) {
 		robotPos = findLocation(robotLocation);
 		int i = robotPos[0];
 		int j = robotPos[1];
-		cout << "gridArray[" << i << "][" << j << "] qvalues: " << gridArray[i][j].qValue[0] << " " << gridArray[i][j].qValue[1] << " " << gridArray[i][j].qValue[2] << " " << gridArray[i][j].qValue[3] << endl;
+		//cout << "gridArray[" << i << "][" << j << "] qvalues before updateQValues: " << gridArray[i][j].qValue[0] << " " << gridArray[i][j].qValue[1] << " " << gridArray[i][j].qValue[2] << " " << gridArray[i][j].qValue[3] << endl;
 		int maxQValues[4];
 		int index = -1;
 		int maxCount = 0;
@@ -389,7 +460,7 @@ char findAction(GridBox gridArray[6][5], int robotLocation, int iteration) {
 		if (maxCount > 1) {
 			value = randomNumberGen(maxCount) + 1;
 			index = maxQValues[value - 1];
-			cout << "Index is: " << index << endl;
+			//cout << "Index is: " << index << endl;
 		}
 		else
 			index = maxQValues[0];
@@ -407,7 +478,7 @@ char findAction(GridBox gridArray[6][5], int robotLocation, int iteration) {
 			direction = 'S';
 			break;
 		default:
-			cout << "The direction did not match any cases.\n";
+			//cout << "The direction did not match any cases.\n";
 			break;
 		}
 	}
@@ -452,18 +523,18 @@ int* findLocation(int* location) {
 */
 void updateQValues(GridBox gridArray[6][5], int tuple[5]) {
 	int* currentState = findLocation(tuple[0]); //finds robot's current location
-	cout << "currentState: " << currentState[0] << ' ' << currentState[1] << ": " << tuple[0] << endl;
+	//cout << "currentState: " << currentState[0] << ' ' << currentState[1] << ": " << tuple[0] << endl;
 	int i = currentState[0]; int j = currentState[1];
 	int currentAction = tuple[1];
 	int reward = tuple[2];
 	int* nextState = findLocation(tuple[3]);
-	cout << "nextState: " << nextState[0] << ' ' << nextState[1] << ": " << tuple[3] << endl;
+	//cout << "nextState: " << nextState[0] << ' ' << nextState[1] << ": " << tuple[3] << endl;
 	int nextAction = tuple[4];
 	int k = nextState[0]; int l = nextState[1];
-	cout << "Current action is " << tuple[1] << " and next action is " << tuple[4] << endl;
-	cout << "2.The value of the access Frequency before : " << gridArray[i][j].accessFrequency[0] << " " << gridArray[i][j].accessFrequency[1] << " " << gridArray[i][j].accessFrequency[2] << " " << gridArray[i][j].accessFrequency[3] << endl;
+	//cout << "Current action is " << tuple[1] << " and next action is " << tuple[4] << endl;
+	//cout << "2.The value of the access Frequency before : " << gridArray[i][j].accessFrequency[0] << " " << gridArray[i][j].accessFrequency[1] << " " << gridArray[i][j].accessFrequency[2] << " " << gridArray[i][j].accessFrequency[3] << endl;
 	gridArray[i][j].qValue[currentAction] = (1 / (gridArray[i][j].accessFrequency[currentAction]*1.0)) * (reward + .9 * max(gridArray[k][l].qValue) - gridArray[i][j].qValue[currentAction]);
-	cout << "gridArray[" << i << "][" << j << "] qvalues: " << gridArray[i][j].qValue[0] << " " << gridArray[i][j].qValue[1] << " " << gridArray[i][j].qValue[2] << " " << gridArray[i][j].qValue[3] << endl;
+	//cout << "gridArray[" << i << "][" << j << "] qvalues after updateQValues: " << gridArray[i][j].qValue[0] << " " << gridArray[i][j].qValue[1] << " " << gridArray[i][j].qValue[2] << " " << gridArray[i][j].qValue[3] << endl;
 }
 
 float max(float array[]) {
