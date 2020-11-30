@@ -51,7 +51,7 @@ void updateQValues(GridBox gridArray[6][5], int tuple[5]);
 bool compareTo(float A, float B, float epsilon = 0.005f);
 
 int main() {
-	srand(time(0)); 
+	srand(time(0));
 	Robot robot = Robot();
 	GridBox gridArray[6][5];
 	populateGrid(gridArray);
@@ -66,15 +66,9 @@ int main() {
 	return 0;
 }
 
-int randomNumberGen(int maxNum)
-{
-	
+int randomNumberGen(int maxNum) {
 	int num;
-	
 	num = rand() % maxNum;
-	
-	//mt19937::result_type seed = time(0);
-	//auto num = bind(uniform_int_distribution<int>(1, maxNum), mt19937(seed));
 	return num;
 }
 
@@ -102,59 +96,143 @@ void populateGrid(GridBox gridArray[6][5]) {
 
 void displayGrid(GridBox gridArray[6][5]) {
 	int value, index, maxCount = 0, maxQValues[4];
-		//cout << gridArray[i][j].accessFrequency[1] << "  " << gridArray[i][1].accessFrequency[1] << "  " << gridArray[i][2].accessFrequency[1] << "  " << gridArray[i][3].accessFrequency[1] << "  " << gridArray[i][4].accessFrequency[1] << endl;
 	for (int i = 0; i < 6; i++) { //q-value table
+		for (int k = 0; k < 3; k++) {
 			for (int j = 0; j < 5; j++) {
-				if (gridArray[i][j].isObstacle == 1) {
-					cout << "  " << "####" << "  ";
-				}
-				else{
-
-					if (j != 4)
-					{
-						cout << internal << setw(12) << gridArray[i][j].accessFrequency[1];
-						cout << left << setw(9) << gridArray[i][j].accessFrequency[0];
-						cout << right << setw(9) << gridArray[i][j].accessFrequency[2];
-						cout << internal << setw(12) << gridArray[i][j].accessFrequency[3];
-					}
-					else
-					{
-						cout << internal << setw(12) << gridArray[i][j].accessFrequency[1];
-						cout << left << setw(9) << gridArray[i][j].accessFrequency[0];
-						cout << right << setw(9) << gridArray[i][j].accessFrequency[2];
-						cout << internal << setw(12) << gridArray[i][j].accessFrequency[3];
-						cout << endl;
-					}
-				}
-				/*if (gridArray[i][j].isObstacle == 1) {
-					if (i % 2 != 0)
-						cout << "    ";
-					else
-						cout << "####" << "  ";
-				}
-				else {
-					if (j == 0 && i % 2 == 0)
-						cout << "     ";
-					for (int k = 0; k < 2; k++) {
-						for (int l = 0; l < 4; l++) {
-							switch (k) {
+				switch (k) {
+					case 0: //printing northern values
+						switch (j) {
 							case 0:
-								cout << left << setw(16) << gridArray[i][j].accessFrequency[1];
+								if (gridArray[i][j].isObstacle == 1)
+									cout << right << setw(7);
+								else
+									cout << right << setw(7) << gridArray[i][j].accessFrequency[1];
 								break;
 							case 1:
-								cout << left << setw(4) << gridArray[i][j].accessFrequency[0] << "  " << gridArray[i][j].accessFrequency[2];
+								if (gridArray[i][j].isObstacle == 1)
+									cout << right << setw(18) << "" << setw(18);
+								else
+									cout << right << setw(18) << gridArray[i][j].accessFrequency[1];
 								break;
 							case 2:
-								cout << left << setw(16) << gridArray[i][j].accessFrequency[3];
+								if (gridArray[i][j].isObstacle == 1)
+									cout << right << setw(18)  << "" << setw(18) << " ";
+								else
+									cout << right << setw(18) << gridArray[i][j].accessFrequency[1] << setw(18) << " ";
 								break;
-							}
+							case 3:
+								if (gridArray[i][j].isObstacle == 1)
+									cout << left << setw(18) << " ";
+								else
+									cout << left << setw(18) << gridArray[i][j].accessFrequency[1];
+								break;
+							case 4:
+								if (gridArray[i][j].isObstacle == 1)
+									cout << left << setw(7) << " " << endl;
+								else
+									cout << left << setw(7) << gridArray[i][j].accessFrequency[1] << endl;
+								break;
+						}
+						break;
+					case 1: //printing west and east values
+						if (gridArray[i][j].isObstacle == 1)
+							cout << left << setw(6) << "    ####    " << setw(6) << right << "      ";
+						else if (j == 4)
+							cout << left << setw(6) << gridArray[i][j].accessFrequency[0] << setw(6) << right << gridArray[i][j].accessFrequency[2] << endl;
+						else
+							cout << left << setw(6) << gridArray[i][j].accessFrequency[0] << setw(6) << right << gridArray[i][j].accessFrequency[2] << "      ";
+						break;
+					case 2: //printing south values
+						switch (j) {
+						case 0:
+							if (gridArray[i][j].isObstacle == 1)
+								cout << right << setw(7);
+							else
+								cout << right << setw(7) << gridArray[i][j].accessFrequency[3];
+							break;
+						case 1:
+							if (gridArray[i][j].isObstacle == 1)
+								cout << right << setw(18) << " " << setw(18);
+							else
+								cout << right << setw(18) << gridArray[i][j].accessFrequency[3];
+							break;
+						case 2:
+							if (gridArray[i][j].isObstacle == 1)
+								cout << right << setw(18) << "" << setw(18) << "";
+							else
+								cout << right << setw(18) << gridArray[i][j].accessFrequency[3] << setw(18) << " ";
+							break;
+						case 3:
+							if (gridArray[i][j].isObstacle == 1)
+								cout << left << setw(18) << " ";
+							else
+								cout << left << setw(18) << gridArray[i][j].accessFrequency[3];
+							break;
+						case 4:
+							if (gridArray[i][j].isObstacle == 1)
+								cout << left << setw(7) << " " << endl;
+							else
+								cout << left << setw(7) << gridArray[i][j].accessFrequency[3] << endl;
+							break;
+						}
+							break;
+				}
+			}
+			
+			cout << endl;
+			//for (int j = 0; j < 5; j++) {
+			//}
+			//
+			//if (gridArray[i][j].isObstacle == 1) {
+			//	cout << "  " << "####" << "  ";
+			//}
+			//else {
+
+			//	if (j != 4)
+			//	{
+			//		cout << internal << setw(12) << gridArray[i][j].accessFrequency[1];
+			//		cout << left << setw(9) << gridArray[i][j].accessFrequency[0];
+			//		cout << right << setw(9) << gridArray[i][j].accessFrequency[2];
+			//		cout << internal << setw(12) << gridArray[i][j].accessFrequency[3];
+			//	}
+			//	else
+			//	{
+			//		cout << internal << setw(12) << gridArray[i][j].accessFrequency[1];
+			//		cout << left << setw(9) << gridArray[i][j].accessFrequency[0];
+			//		cout << right << setw(9) << gridArray[i][j].accessFrequency[2];
+			//		cout << internal << setw(12) << gridArray[i][j].accessFrequency[3];
+			//		cout << endl;
+			//	}
+			//}
+			/*if (gridArray[i][j].isObstacle == 1) {
+				if (i % 2 != 0)
+					cout << "    ";
+				else
+					cout << "####" << "  ";
+			}
+			else {
+				if (j == 0 && i % 2 == 0)
+					cout << "     ";
+				for (int k = 0; k < 2; k++) {
+					for (int l = 0; l < 4; l++) {
+						switch (k) {
+						case 0:
+							cout << left << setw(16) << gridArray[i][j].accessFrequency[1];
+							break;
+						case 1:
+							cout << left << setw(4) << gridArray[i][j].accessFrequency[0] << "  " << gridArray[i][j].accessFrequency[2];
+							break;
+						case 2:
+							cout << left << setw(16) << gridArray[i][j].accessFrequency[3];
+							break;
 						}
 					}
 				}
-				if ((gridArray[i][j].position % 5) == 0)
-					cout << std::endl;*/
 			}
+			if ((gridArray[i][j].position % 5) == 0)
+				cout << std::endl;*/
 		}
+	}
 	//for (int i = 0; i < 6; i++) { //q-value table
 	//	for (int j = 0; j < 5; j++) {
 	//		if (gridArray[i][j].isObstacle == 1) {
@@ -381,7 +459,7 @@ void trial(int robotLocation, GridBox gridArray[6][5], int moves = 0, int action
 
 			int i = squareInGrid[0];
 			int j = squareInGrid[1];
-			if (gridArray[i][j].isObstacle == 0) {
+			if (gridArray[i][j].isObstacle == 0 && startingSquare != 13) {
 				obstacleFound = 0;
 			}
 		}
@@ -534,7 +612,7 @@ void updateQValues(GridBox gridArray[6][5], int tuple[5]) {
 	int k = nextState[0]; int l = nextState[1];
 	//cout << "Current action is " << tuple[1] << " and next action is " << tuple[4] << endl;
 	//cout << "2.The value of the access Frequency before : " << gridArray[i][j].accessFrequency[0] << " " << gridArray[i][j].accessFrequency[1] << " " << gridArray[i][j].accessFrequency[2] << " " << gridArray[i][j].accessFrequency[3] << endl;
-	gridArray[i][j].qValue[currentAction] = (1 / (gridArray[i][j].accessFrequency[currentAction]*1.0)) * (reward + .9 * max(gridArray[k][l].qValue) - gridArray[i][j].qValue[currentAction]);
+	gridArray[i][j].qValue[currentAction] = (1 / (gridArray[i][j].accessFrequency[currentAction] * 1.0)) * (reward + .9 * max(gridArray[k][l].qValue) - gridArray[i][j].qValue[currentAction]);
 	//cout << "gridArray[" << i << "][" << j << "] qvalues after updateQValues: " << gridArray[i][j].qValue[0] << " " << gridArray[i][j].qValue[1] << " " << gridArray[i][j].qValue[2] << " " << gridArray[i][j].qValue[3] << endl;
 }
 
