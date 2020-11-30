@@ -106,6 +106,27 @@ void displayGrid(GridBox gridArray[6][5]) {
 	for (int i = 0; i < 6; i++) { //q-value table
 			for (int j = 0; j < 5; j++) {
 				if (gridArray[i][j].isObstacle == 1) {
+					cout << "  " << "####" << "  ";
+				}
+				else{
+
+					if (j != 4)
+					{
+						cout << internal << setw(12) << gridArray[i][j].accessFrequency[1];
+						cout << left << setw(9) << gridArray[i][j].accessFrequency[0];
+						cout << right << setw(9) << gridArray[i][j].accessFrequency[2];
+						cout << internal << setw(12) << gridArray[i][j].accessFrequency[3];
+					}
+					else
+					{
+						cout << internal << setw(12) << gridArray[i][j].accessFrequency[1];
+						cout << left << setw(9) << gridArray[i][j].accessFrequency[0];
+						cout << right << setw(9) << gridArray[i][j].accessFrequency[2];
+						cout << internal << setw(12) << gridArray[i][j].accessFrequency[3];
+						cout << endl;
+					}
+				}
+				/*if (gridArray[i][j].isObstacle == 1) {
 					if (i % 2 != 0)
 						cout << "    ";
 					else
@@ -131,7 +152,7 @@ void displayGrid(GridBox gridArray[6][5]) {
 					}
 				}
 				if ((gridArray[i][j].position % 5) == 0)
-					cout << std::endl;
+					cout << std::endl;*/
 			}
 		}
 	//for (int i = 0; i < 6; i++) { //q-value table
