@@ -99,7 +99,6 @@ void populateGrid(GridBox gridArray[6][5]) {
 /*
 * Purpose:
 */
-
 void displayGrid(GridBox gridArray[6][5]) {
 	int value, index, maxCount = 0, maxQValues[4];
 	cout << "Table of N(s, a)" << endl;
@@ -199,75 +198,75 @@ for (int i = 0; i < 6; i++) { //q-value table
 				switch (j) {
 				case 0:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << right << setw(7);
+						cout << right << setw(10);
 					else
-						cout << right << setw(7)<< setprecision(2)<< gridArray[i][j].qValue[1] ;
+						cout << right << setw(10)<< setprecision(2)<< gridArray[i][j].qValue[1] ;
 					break;
 				case 1:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << right << setw(18) << "" << setw(18);
+						cout << right << setw(20) << "" << setw(18);
 					else
-						cout << right << setw(18)<< setprecision(2) << gridArray[i][j].qValue[1];
+						cout << right << setw(20)<< setprecision(2) << gridArray[i][j].qValue[1];
 					break;
 				case 2:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << right << setw(18) << "" << setw(18) << " ";
+						cout << right << setw(20) << "" << setw(18) << " ";
 					else
-						cout << right << setw(18)<< setprecision(2)  << gridArray[i][j].qValue[1] << setw(18) << " ";
+						cout << right << setw(20)<< setprecision(2)  << gridArray[i][j].qValue[1] << setw(18) << " ";
 					break;
 				case 3:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << left << setw(18) << " ";
+						cout << left << setw(20) << " ";
 					else
-						cout << left << setw(18)<< setprecision(2)  << gridArray[i][j].qValue[1];
+						cout << left << setw(20)<< setprecision(2)  << gridArray[i][j].qValue[1];
 					break;
 				case 4:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << left << setw(7) << " " << endl;
+						cout << left << setw(10) << " " << endl;
 					else
-						cout << left << setw(7)<< setprecision(2)  << gridArray[i][j].qValue[1] << endl;
+						cout << left << setw(10)<< setprecision(2)  << gridArray[i][j].qValue[1] << endl;
 					break;
 				}
 				break;
 			case 1: //printing west and east values
 				if (gridArray[i][j].isObstacle == 1)
-					cout << left << setw(6) << "    ####    " << setw(6) << right << "      ";
+					cout << left << setw(8) << "    ####    " << setw(8) << right << "      ";
 				else if (j == 4)
-					cout << left << setw(7)<< setprecision(2) << gridArray[i][j].qValue[0] << setw(8)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "            " << endl;
+					cout << left << setw(6)<< setprecision(2) << gridArray[i][j].qValue[0] << setw(8)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "            " << endl;
 				else
-					cout << left << setw(6)<< setprecision(2)  << gridArray[i][j].qValue[0] << setw(6)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "       ";
+					cout << left << setw(6)<< setprecision(2)  << gridArray[i][j].qValue[0] << setw(8)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "       ";
 				break;
 			case 2: //printing south values
 				switch (j) {
 				case 0:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << right << setw(7);
+						cout << right << setw(10);
 					else
-						cout << right << setw(7)<< setprecision(2) << gridArray[i][j].qValue[3] ;
+						cout << right << setw(10)<< setprecision(2) << gridArray[i][j].qValue[3] ;
 					break;
 				case 1:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << right << setw(18) << " " << setw(18);
+						cout << right << setw(20) << " " << setw(18);
 					else
-						cout << right << setw(18)<< setprecision(2) << gridArray[i][j].qValue[3] ;
+						cout << right << setw(20)<< setprecision(2) << gridArray[i][j].qValue[3] ;
 					break;
 				case 2:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << right << setw(18) << "" << setw(18) << "";
+						cout << right << setw(20) << "" << setw(18) << "";
 					else
-						cout << right << setw(18)<< setprecision(2)  << gridArray[i][j].qValue[3] << setw(18) << " ";
+						cout << right << setw(20)<< setprecision(2)  << gridArray[i][j].qValue[3] << setw(18) << " ";
 					break;
 				case 3:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << left << setw(18) << " ";
+						cout << left << setw(20) << " ";
 					else
-						cout << left << setw(18)<< setprecision(2) << gridArray[i][j].qValue[3] ;
+						cout << left << setw(20)<< setprecision(2) << gridArray[i][j].qValue[3] ;
 					break;
 				case 4:
 					if (gridArray[i][j].isObstacle == 1)
-						cout << left << setw(7) << " " << endl;
+						cout << left << setw(10) << " " << endl;
 					else
-						cout << left << setw(7)<<setprecision(2)  << gridArray[i][j].qValue[3] << endl;
+						cout << left << setw(10)<<setprecision(2)  << gridArray[i][j].qValue[3] << endl;
 					break;
 				}
 				break;
