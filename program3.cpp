@@ -115,25 +115,25 @@ void displayGrid(GridBox gridArray[6][5]) {
 				case 0: //printing northern values
 					switch (j) {
 					case 0:
-						if(gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << right << setw(7);
 						else
 							cout << right << setw(7) << gridArray[i][j].accessFrequency[1];
 						break;
 					case 1:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << right << setw(18) << "" << setw(18);
 						else
 							cout << right << setw(18) << gridArray[i][j].accessFrequency[1];
 						break;
 					case 2:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << right << setw(18) << "" << setw(18) << " ";
 						else
 							cout << right << setw(18) << gridArray[i][j].accessFrequency[1] << setw(18) << " ";
 						break;
 					case 3:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << left << setw(18) << " ";
 						else
 							cout << left << setw(18) << gridArray[i][j].accessFrequency[1];
@@ -147,45 +147,41 @@ void displayGrid(GridBox gridArray[6][5]) {
 					}
 					break;
 				case 1: //printing west and east values
-					if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13) {
-						if(gridArray[i][j].position == 13)
-							cout << left << setw(8) << "    +100    " << setw(8) << right << "      ";
-						else
-							cout << left << setw(8) << "    ####    " << setw(8) << right << "      ";
-					}
+					if (gridArray[i][j].isObstacle == 1)
+						cout << left << setw(6) << "    ####    " << setw(6) << right << "      ";
 					else if (j == 4)
-						cout << left << setw(6) << fixed << setprecision(2) << gridArray[i][j].qValue[0] << setw(9) << fixed << setprecision(2) << right << gridArray[i][j].qValue[2] << "           " << endl;
+						cout << left << setw(7) << gridArray[i][j].accessFrequency[0] << setw(8) << right << gridArray[i][j].accessFrequency[2] << "            " << endl;
 					else
-						cout << left << setw(6) << fixed << setprecision(2) << gridArray[i][j].qValue[0] << setw(9) << fixed << setprecision(2) << right << gridArray[i][j].qValue[2] << "      ";
+						cout << left << setw(6) << gridArray[i][j].accessFrequency[0] << setw(6) << right << gridArray[i][j].accessFrequency[2] << "       ";
 					break;
 				case 2: //printing south values
 					switch (j) {
 					case 0:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << right << setw(7);
 						else
 							cout << right << setw(7) << gridArray[i][j].accessFrequency[3];
 						break;
 					case 1:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << right << setw(18) << " " << setw(18);
 						else
 							cout << right << setw(18) << gridArray[i][j].accessFrequency[3];
 						break;
 					case 2:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << right << setw(18) << "" << setw(18) << "";
 						else
 							cout << right << setw(18) << gridArray[i][j].accessFrequency[3] << setw(18) << " ";
 						break;
 					case 3:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << left << setw(18) << " ";
 						else
 							cout << left << setw(18) << gridArray[i][j].accessFrequency[3];
 						break;
 					case 4:
-						if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13)
+						if (gridArray[i][j].isObstacle == 1)
 							cout << left << setw(7) << " " << endl;
 						else
 							cout << left << setw(7) << gridArray[i][j].accessFrequency[3] << endl;
@@ -240,15 +236,15 @@ void displayGrid(GridBox gridArray[6][5]) {
 					break;
 				case 1: //printing west and east values
 					if (gridArray[i][j].isObstacle == 1 || gridArray[i][j].position == 13) {
-						if(gridArray[i][j].position == 13)
+						if (gridArray[i][j].position == 13)
 							cout << left << setw(8) << "    +100    " << setw(8) << right << "      ";
 						else
 							cout << left << setw(8) << "    ####    " << setw(8) << right << "      ";
 					}
 					else if (j == 4)
-						cout << left << setw(7) << gridArray[i][j].qValue[0] << setw(8) << right << gridArray[i][j].qValue[2] << "            " << endl;
+						cout << left << setw(6) << fixed << setprecision(2) << gridArray[i][j].qValue[0] << setw(9) << fixed << setprecision(2) << right << gridArray[i][j].qValue[2] << "           " << endl;
 					else
-						cout << left << setw(6) << gridArray[i][j].qValue[0] << setw(6) << right << gridArray[i][j].qValue[2] << "       ";
+						cout << left << setw(6) << fixed << setprecision(2) << gridArray[i][j].qValue[0] << setw(9) << fixed << setprecision(2) << right << gridArray[i][j].qValue[2] << "      ";
 					break;
 				case 2: //printing south values
 					switch (j) {
