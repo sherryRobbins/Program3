@@ -154,7 +154,7 @@ void displayGrid(GridBox gridArray[6][5]) {
 							cout << left << setw(8) << "    ####   " << setw(8) << right << "      ";
 					}
 					else if (j == 4)
-						cout << left << setw(7) << gridArray[i][j].accessFrequency[0] << setw(8) << right << gridArray[i][j].accessFrequency[2] << "            " << endl;
+						cout << left << setw(7) << gridArray[i][j].accessFrequency[0] << gridArray[i][j].accessFrequency[2] << endl;
 					else
 						cout << left << setw(6) << gridArray[i][j].accessFrequency[0] << setw(6) << right << gridArray[i][j].accessFrequency[2] << "       ";
 					break;
