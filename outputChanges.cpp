@@ -232,9 +232,9 @@ for (int i = 0; i < 6; i++) { //q-value table
 				if (gridArray[i][j].isObstacle == 1)
 					cout << left << setw(8) << "    ####    " << setw(8) << right << "      ";
 				else if (j == 4)
-					cout << left << setw(6)<< setprecision(2) << gridArray[i][j].qValue[0] << setw(8)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "            " << endl;
+					cout << left << setw(6)<< setprecision(2) << gridArray[i][j].qValue[0] << setw(8)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "           " << endl;
 				else
-					cout << left << setw(6)<< setprecision(2)  << gridArray[i][j].qValue[0] << setw(8)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "       ";
+					cout << left << setw(6)<< setprecision(2)  << gridArray[i][j].qValue[0] << setw(8)<< setprecision(2) << right  << gridArray[i][j].qValue[2] << "      ";
 				break;
 			case 2: //printing south values
 				switch (j) {
